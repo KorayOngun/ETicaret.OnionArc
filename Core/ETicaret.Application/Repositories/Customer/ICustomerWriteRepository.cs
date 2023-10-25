@@ -5,10 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ETicaret.Application.Abstractions
+namespace ETicaret.Application.Repositories
 {
-    public interface IProductService
+    public interface ICustomerWriteRepository : IWriteRepository<Customer>
     {
-        List<Product> GetProducts();
     }
 }
