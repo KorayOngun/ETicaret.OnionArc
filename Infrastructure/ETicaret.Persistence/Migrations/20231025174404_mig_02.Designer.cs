@@ -3,6 +3,7 @@ using System;
 using ETicaret.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ETicaret.Persistence.Migrations
 {
     [DbContext(typeof(ETicaretDbContext))]
-    partial class ETicaretDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231025174404_mig_02")]
+    partial class mig_02
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,9 +37,6 @@ namespace ETicaret.Persistence.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -63,9 +63,6 @@ namespace ETicaret.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("timestamp with time zone");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
@@ -91,9 +88,6 @@ namespace ETicaret.Persistence.Migrations
 
                     b.Property<int>("Stock")
                         .HasColumnType("integer");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 

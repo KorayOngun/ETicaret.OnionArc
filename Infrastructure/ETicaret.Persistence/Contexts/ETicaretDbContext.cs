@@ -1,4 +1,5 @@
 ﻿using ETicaret.Domain.Entities;
+using ETicaret.Domain.Entities.Common;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,32 @@ namespace ETicaret.Persistence.Contexts
         public DbSet<Product> Products { get; set; }
         public DbSet<Order> Orders{ get; set; }
         public DbSet<Customer> Customers{ get; set; }
+
+
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+           foreach(var entry in ChangeTracker.Entries<BaseEntity>())
+            {
+                switch (entry.State)
+                {
+                    //case EntityState.Detached:
+                    //    break;
+                    //case EntityState.Unchanged:
+                    //    break;
+                    //case EntityState.Deleted:
+                    //    break;
+                    case EntityState.Modified:
+                        entry.Entity.UpdatedDate= DateTime.UtcNow;
+                        break;
+                    case EntityState.Added:
+                        entry.Entity.CreatedDate = DateTime.UtcNow;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return await base.SaveChangesAsync(cancellationToken);
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
