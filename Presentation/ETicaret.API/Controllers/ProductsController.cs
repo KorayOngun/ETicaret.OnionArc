@@ -1,7 +1,8 @@
 ﻿using ETicaret.Application.Repositories;
 using ETicaret.Application.ViewModels.Products;
 using ETicaret.Domain.Entities;
-using Microsoft.AspNetCore.Http;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -15,32 +16,37 @@ public class ProductsController : ControllerBase
     private readonly IProductReadRepository _productReadRepository;
 
 
-
     public ProductsController(IProductWriteRepository productWriteRepository, IProductReadRepository productReadRepository)
     {
         _productWriteRepository = productWriteRepository;
         _productReadRepository = productReadRepository;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> Get()
+    [HttpGet("[action]")]
+    public IActionResult Get()
     {
         return Ok(_productReadRepository.GetAll(false));
     }
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(string id)
     {
-        return Ok(_productReadRepository.GetByIdAsync(id,false));
+        return Ok(await _productReadRepository.GetByIdAsync(id,false));
     }
-
+    
     [HttpPost]
     public async Task<IActionResult> Post(VM_Create_Product model)
     {
-        await _productWriteRepository.AddAsync(new() 
-        {  
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        return Ok();
+        
+        await _productWriteRepository.AddAsync(new()
+        {
             Name = model.Name,
             Price = model.Price,
-            Stock =model.Stock,
+            Stock = model.Stock,
         });
         await _productWriteRepository.SaveAsync();
         return StatusCode((int)HttpStatusCode.Created);
