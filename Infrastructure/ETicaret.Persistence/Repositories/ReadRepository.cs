@@ -23,6 +23,7 @@ namespace ETicaret.Persistence.Repositories
 
         public IQueryable<T> GetAll(bool tracking = true)
         {
+            
             var query = Table.AsQueryable();
             if (!tracking) return query.AsNoTracking();
             return query;

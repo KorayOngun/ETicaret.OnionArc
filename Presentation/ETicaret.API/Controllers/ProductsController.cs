@@ -1,4 +1,6 @@
 ﻿using ETicaret.Application.Repositories;
+using ETicaret.Application.RequestParameters;
+using ETicaret.Application.Validators;
 using ETicaret.Application.ViewModels.Products;
 using ETicaret.Domain.Entities;
 using FluentValidation;
@@ -23,9 +25,23 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet("[action]")]
-    public IActionResult Get()
+    public IActionResult Get([FromQuery]Pagination pagination)
     {
-        return Ok(_productReadRepository.GetAll(false));
+        var totalCount = _productReadRepository.GetAll(false).Count();
+        var products =  _productReadRepository.GetAll(false).Skip(pagination.Page*pagination.Size).Take(pagination.Size).Select(p =>new
+        {
+            p.Id,
+            p.Name,
+            p.Stock,
+            p.Price,
+            p.CreatedDate,
+            p.UpdatedDate
+        });
+        return Ok(new
+        {
+            totalCount,
+            products
+        });
     }
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(string id)
@@ -34,13 +50,9 @@ public class ProductsController : ControllerBase
     }
     
     [HttpPost]
+    [Validator]
     public async Task<IActionResult> Post(VM_Create_Product model)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-        return Ok();
         
         await _productWriteRepository.AddAsync(new()
         {
@@ -53,6 +65,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPut]
+    [Validator]
     public async Task<IActionResult> Put(VM_Update_Product model)
     {
         Product product = await _productReadRepository.GetByIdAsync(model.Id);
