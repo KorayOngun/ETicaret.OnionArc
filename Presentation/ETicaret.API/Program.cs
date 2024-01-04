@@ -1,7 +1,9 @@
+using ETicaret.Application;
+using ETicaret.Application.Features.Commands.Product.CreateProduct;
 using ETicaret.Application.Validators.Products;
 using ETicaret.Application.ViewModels.Products;
-
-
+using ETicaret.Infrastructure;
+using ETicaret.Infrastructure.Services.Storage.Local;
 using ETicaret.Persistence;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -15,7 +17,13 @@ builder.Services.AddControllers();
     //.ConfigureApiBehaviorOptions(opt => opt.SuppressModelStateInvalidFilter = true);
 
 builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddScoped<IValidator<VM_Create_Product>, CreateProductValidator>();
+builder.Services.AddScoped<IValidator<CreateProductCommandRequest>, CreateProductValidator>();
+
+
+builder.Services.AddInfrastructureServices();
+builder.Services.AddStorage<LocalStorage>();
+
+builder.Services.AddAplicationServices();
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -46,6 +54,10 @@ if (app.Environment.IsDevelopment())
 }
 
 
+app.UseStaticFiles(new StaticFileOptions
+{
+    RequestPath = "/staticfile"
+});
 
 app.UseCors();
 app.UseHttpsRedirection();
