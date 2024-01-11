@@ -7,6 +7,10 @@ using ETicaret.Infrastructure.Services.Storage.Local;
 using ETicaret.Persistence;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.Text.Unicode;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +29,22 @@ builder.Services.AddStorage<LocalStorage>();
 
 builder.Services.AddAplicationServices();
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer("Admin",opt =>
+                {
+                    opt.TokenValidationParameters = new()
+                    {
+                        ValidateAudience = true, //token deðerinin kullanýcýsý => www.bilmemne.com
+                        ValidateIssuer = true, // token deðerini daðýtan => www.myapi.com
+                        ValidateLifetime = true, // token süresi
+                        ValidateIssuerSigningKey = true, // token deðerinin uygulamamýza ait olduðunu ifade eden security key
+
+                        ValidAudience = builder.Configuration["Token:Audience"],
+                        ValidIssuer = builder.Configuration["Token:Issuer"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Token:SecurityKey"])),
+
+                    };
+                });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -62,6 +82,7 @@ app.UseStaticFiles(new StaticFileOptions
 app.UseCors();
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

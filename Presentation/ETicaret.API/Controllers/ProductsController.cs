@@ -1,5 +1,4 @@
-﻿using ETicaret.Application.Abstractions.Storage;
-using ETicaret.Application.Features.Commands.Product.CreateProduct;
+﻿using ETicaret.Application.Features.Commands.Product.CreateProduct;
 using ETicaret.Application.Features.Commands.Product.RemoveProduct;
 using ETicaret.Application.Features.Commands.Product.UpdateProduct;
 using ETicaret.Application.Features.Commands.ProductImageFile.RemoveProductImage;
@@ -7,22 +6,17 @@ using ETicaret.Application.Features.Commands.ProductImageFile.UploadProductImage
 using ETicaret.Application.Features.Queries.Product.GetAllProduct;
 using ETicaret.Application.Features.Queries.Product.GetByIdProduct;
 using ETicaret.Application.Features.Queries.ProductImageFile.GetProductImages;
-using ETicaret.Application.Repositories;
-using ETicaret.Application.RequestParameters;
 using ETicaret.Application.Validators;
-using ETicaret.Application.ViewModels.Products;
-using ETicaret.Domain.Entities;
-using FluentValidation;
-using FluentValidation.AspNetCore;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Net;
 
 namespace ETicaret.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(AuthenticationSchemes = "Admin")]
 public class ProductsController : ControllerBase
 {
     readonly IMediator _mediator;

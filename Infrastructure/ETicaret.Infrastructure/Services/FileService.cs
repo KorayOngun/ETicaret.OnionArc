@@ -79,7 +79,6 @@ namespace ETicaret.Infrastructure.Services
                 return datas;
             }
 
-            //TODO eğer ki yukarıdaki if geçerli değilse burada dosyaların sunucuda yüklenirken hata alındığına dair exception oluştur.
             return null;
         }
     }

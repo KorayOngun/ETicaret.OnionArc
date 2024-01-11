@@ -1,5 +1,7 @@
 ﻿using ETicaret.Domain.Entities;
 using ETicaret.Domain.Entities.Common;
+using ETicaret.Domain.Entities.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -9,8 +11,9 @@ using System.Threading.Tasks;
 
 namespace ETicaret.Persistence.Contexts
 {
-    public class ETicaretDbContext : DbContext
+    public class ETicaretDbContext : IdentityDbContext<AppUser,AppRole,string>
     {
+        
         public ETicaretDbContext(DbContextOptions<ETicaretDbContext> options) : base(options)
         {}
         
@@ -54,6 +57,7 @@ namespace ETicaret.Persistence.Contexts
             {
                 entity.HasOne(o=>o.Customer).WithMany(c=>c.Orders).HasForeignKey(o=>o.CustomerId);
             });
+            base.OnModelCreating(modelBuilder);
         }
 
     }

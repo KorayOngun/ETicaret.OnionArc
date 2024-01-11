@@ -53,7 +53,6 @@ namespace ETicaret.Infrastructure.Services.Storage.Local
             return datas;
 
 
-            //TODO eğer ki yukarıdaki if geçerli değilse burada dosyaların sunucuda yüklenirken hata alındığına dair exception oluştur.
             //return null;
         }
         private async Task<bool> CopyFileAsync(string path, IFormFile file)
