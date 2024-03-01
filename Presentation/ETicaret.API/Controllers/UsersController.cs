@@ -1,4 +1,5 @@
 ﻿using ETicaret.Application.Features.Commands.AppUser.CreateUser;
+using ETicaret.Application.Features.Commands.AppUser.GoogleLogin;
 using ETicaret.Application.Features.Commands.AppUser.LoginUser;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -25,11 +26,5 @@ namespace ETicaret.API.Controllers
             return Ok(response);
         }
 
-        [HttpPost("[action]")]
-        public async Task<IActionResult> Login(LoginUserCommandRequest req)
-        {
-            var response = await _mediator.Send(req);
-            return Ok(response);
-        }
     }
 }

@@ -1,8 +1,11 @@
 ﻿
+using ETicaret.Application.Abstractions.Services;
+using ETicaret.Application.Abstractions.Services.Authentication;
 using ETicaret.Application.Repositories;
 using ETicaret.Domain.Entities.Identity;
 using ETicaret.Persistence.Contexts;
 using ETicaret.Persistence.Repositories;
+using ETicaret.Persistence.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -18,7 +21,7 @@ namespace ETicaret.Persistence
         public static void AddPersistenceServices(this IServiceCollection services)
         {
             services.AddDbContext<ETicaretDbContext>(opt => opt.UseNpgsql(Configurations.ConnectionString));
-
+            
             services.AddIdentity<AppUser, AppRole>(opt =>
             {
                 opt.Password.RequiredLength = 3;
@@ -48,6 +51,22 @@ namespace ETicaret.Persistence
 
             services.AddScoped<IInvoiceFileReadRepository, InvoiceFileReadRepository>();
             services.AddScoped<IInvoiceFileWriteRepository, InvoiceFileWriteRepository>();
+
+            services.AddScoped<IUserService, UserService>();
+
+            services.AddScoped<IAuthService,AuthService>();
+            services.AddScoped<IExternalAuthentication,AuthService>();
+            services.AddScoped<IInternalAuthentication, AuthService>();
+
+            services.AddScoped<IBasketReadRepository, BasketReadRepository>();
+            services.AddScoped<IBasketWriteRepository, BasketWriteRepository>();
+
+            services.AddScoped<IBasketItemReadRepository, BasketItemReadRepository>();
+            services.AddScoped<IBasketItemWriteRepository, BasketItemWriteRepository>();
+
+            services.AddScoped<IBasketService,BasketService>();
+
+            services.AddScoped<IOrderService, OrderService>();
         }
     }
 }

@@ -23,7 +23,8 @@ namespace ETicaret.Persistence.Contexts
         public DbSet<Domain.Entities.File> Files { get; set; }
         public DbSet<ProductImageFile> ProductImageFiles { get; set; }
         public DbSet<InvoiceFile> InvoiceFiles { get; set; }
-
+        public DbSet<Basket> Baskets { get; set; }
+        public DbSet<BasketItem> BasketItems { get; set; }
 
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -55,8 +56,18 @@ namespace ETicaret.Persistence.Contexts
         {
             modelBuilder.Entity<Order>(entity =>
             {
-                entity.HasOne(o=>o.Customer).WithMany(c=>c.Orders).HasForeignKey(o=>o.CustomerId);
+                entity.HasKey(x => x.Id);
+                entity.HasIndex(x => x.OrderCode).IsUnique();
+                //entity.HasOne(o=>o.Customer).WithMany(c=>c.Orders).HasForeignKey(o=>o.CustomerId);
             });
+
+          
+
+            modelBuilder.Entity<Basket>(entity =>
+            {
+                entity.HasOne(b => b.Order).WithOne(o => o.Basket).HasForeignKey<Order>(o => o.Id);
+            });
+
             base.OnModelCreating(modelBuilder);
         }
 

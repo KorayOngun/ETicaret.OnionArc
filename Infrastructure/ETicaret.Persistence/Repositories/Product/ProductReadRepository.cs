@@ -12,12 +12,9 @@ namespace ETicaret.Persistence.Repositories
 {
     public class ProductReadRepository : ReadRepository<Product>, IProductReadRepository
     {
-       
         public ProductReadRepository(ETicaretDbContext context) : base(context)
         {
-            
+          
         }
-
-      
     }
 }

@@ -1,0 +1,34 @@
+﻿using ETicaret.Application.Abstractions.Services;
+using ETicaret.Application.Abstractions.Services.Authentication;
+using ETicaret.Application.Abstractions.Token;
+using ETicaret.Application.DTOs;
+using ETicaret.Domain.Entities.Identity;
+using MediatR;
+using Microsoft.AspNetCore.Identity;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ETicaret.Application.Features.Commands.AppUser.GoogleLogin
+{
+    public class GoogleLoginCommandHandler : IRequestHandler<GoogleLoginCommandRequest, GoogleLoginCommandResponse>
+    {
+        private readonly IExternalAuthentication _authService;
+
+        public GoogleLoginCommandHandler(IExternalAuthentication authService)
+        {
+            _authService = authService;
+        }
+
+        public async Task<GoogleLoginCommandResponse> Handle(GoogleLoginCommandRequest request, CancellationToken cancellationToken)
+        {
+            var token = await _authService.GoogleLoginAsync(request.IdToken, 900);
+            return new()
+            {
+                Token = token,
+            };
+        }
+    }
+}

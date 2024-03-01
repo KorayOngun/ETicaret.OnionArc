@@ -33,8 +33,6 @@ namespace ETicaret.Persistence.Repositories
         {
             //return await Table.FirstOrDefaultAsync(x=>x.Id== Guid.Parse(id));
             return (tracking == true ? await Table.FirstOrDefaultAsync(x=>x.Id==Guid.Parse(id)) : await Table.AsNoTracking().FirstOrDefaultAsync(x => x.Id == Guid.Parse(id)));
-
-
         }
 
         public async Task<T> GetSingleAsync(Expression<Func<T, bool>> method, bool tracking = true)
