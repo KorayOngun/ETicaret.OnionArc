@@ -23,7 +23,7 @@ namespace ETicaret.Infrastructure
     {
         public static void AddInfrastructureServices(this IServiceCollection services)
         {
-            
+
 
             services.AddScoped<IStorageService, StorageService>();
             services.AddScoped<ITokenHandler, TokenHandler>();

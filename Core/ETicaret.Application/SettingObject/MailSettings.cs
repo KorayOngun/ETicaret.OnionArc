@@ -10,6 +10,7 @@ namespace ETicaret.Application.SettingObject
     {
         public const string SettingName = "MailSettings";
 
+
         public string Mail { get; set; }
         public string Password { get; set; }
         public int Port { get; set; }
