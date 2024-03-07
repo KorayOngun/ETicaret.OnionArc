@@ -2,10 +2,12 @@
 using ETicaret.Application.Abstractions.Token;
 using ETicaret.Application.DTOs;
 using ETicaret.Application.Exceptions;
+using ETicaret.Application.Helpers;
 using ETicaret.Domain.Entities.Identity;
 using Google.Apis.Auth;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -23,13 +25,15 @@ namespace ETicaret.Persistence.Services
         private readonly IConfiguration _configuration;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IUserService _userService;
-        public AuthService(UserManager<AppUser> userManager, ITokenHandler tokenHandler, IConfiguration configuration, SignInManager<AppUser> signInManager, IUserService userService)
+        readonly IMailService _mailService;
+        public AuthService(UserManager<AppUser> userManager, ITokenHandler tokenHandler, IConfiguration configuration, SignInManager<AppUser> signInManager, IUserService userService, IMailService mailService)
         {
             _userManager = userManager;
             _tokenHandler = tokenHandler;
             _configuration = configuration;
             _signInManager = signInManager;
             _userService = userService;
+            _mailService = mailService;
         }
 
         private async Task<Token> CreateUserExternalAsync(AppUser? user,string email,string name,UserLoginInfo userLoginInfo,int accessTokenLifeTime)
@@ -58,7 +62,7 @@ namespace ETicaret.Persistence.Services
                 
                 Token token = _tokenHandler.CreateAccessToken(accessTokenLifeTime,user);
 
-                await _userService.UpdateRefreshToken(token.RefreshToken,user,token.Expiration,5);
+                await _userService.UpdateRefreshTokenAsync(token.RefreshToken,user,token.Expiration,5);
 
                 return token;
             }
@@ -97,7 +101,7 @@ namespace ETicaret.Persistence.Services
             if (result.Succeeded)
             {
                 var token = _tokenHandler.CreateAccessToken(accessTokenLifeTime,appUser);
-                await _userService.UpdateRefreshToken(token.RefreshToken, appUser, token.Expiration, 300);
+                await _userService.UpdateRefreshTokenAsync(token.RefreshToken, appUser, token.Expiration, 300);
                 return token;
             }
 
@@ -110,10 +114,37 @@ namespace ETicaret.Persistence.Services
             if (user != null && user?.RefreshTokenExpiryDate > DateTime.UtcNow)
             {
                 Token token = _tokenHandler.CreateAccessToken(20,user);
-                await _userService.UpdateRefreshToken(token.RefreshToken,user,token.Expiration,300);
+                await _userService.UpdateRefreshTokenAsync(token.RefreshToken,user,token.Expiration,300);
                 return token;
             }
             throw new NotFoundUserException();
+        }
+
+        public async Task PasswordResetAsync(string email)
+        {
+
+           AppUser user = await _userManager.FindByEmailAsync(email);
+            if (user != null)
+            {
+                string resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+                
+                
+                resetToken = resetToken.UrlEncode();
+              
+                await _mailService.SendPasswordResetMailAsync(email,user.Id,resetToken);
+            }
+            
+        }
+
+        public async Task<bool> VerifyResetTokenAsync(string resetToken, string userId)
+        {
+            AppUser user = (await _userManager.FindByIdAsync(userId));
+            if (user != null)
+            {
+                resetToken = resetToken.UrlDecode();
+                return await _userManager.VerifyUserTokenAsync(user, _userManager.Options.Tokens.PasswordResetTokenProvider, UserManager<AppUser>.ResetPasswordTokenPurpose, resetToken);
+            }
+            return false;
         }
     }
 }

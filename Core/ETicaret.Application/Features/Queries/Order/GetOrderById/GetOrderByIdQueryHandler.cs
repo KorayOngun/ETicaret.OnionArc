@@ -27,7 +27,8 @@ namespace ETicaret.Application.Features.Queries.Order.GetOrderById
                 Address = data.Address,
                 BasketItems = data.BasketItems,
                 CreatedDate = data.CreatedDate,
-                OrderCode = data.OrderCode
+                OrderCode = data.OrderCode,
+                Completed = data.Completed
             };
         }
     }
